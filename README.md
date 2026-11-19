@@ -27,4 +27,4 @@ Falls Google den Login in der App blockiert: **Cookie manuell einfügen** (die A
 
 - Die App nutzt die inoffizielle interne YouTube-Music-API (wie ytmusicapi). Wenn YouTube dort etwas ändert, kann der Sync brechen.
 - Der Login-Cookie liegt nur app-privat auf dem Gerät.
-- `app/release.jks` ist ein Signierschlüssel nur für dieses private Repo. Er sorgt dafür, dass Updates sich über die alte Version installieren lassen. **Das Repo deshalb nicht öffentlich machen.**
+- Signiert wird mit einem Schlüssel aus den Repo-Secrets `KEYSTORE_B64` und `KEYSTORE_PASSWORD`. Er sorgt dafür, dass Updates sich über die alte Version installieren lassen. Fehlen die Secrets, wird mit einem temporären Debug-Key signiert.

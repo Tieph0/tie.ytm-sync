@@ -23,7 +23,20 @@ jobs:
         with:
           gradle-version: "8.11.1"
 
+      - name: Signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+          else
+            echo "::warning::Secret KEYSTORE_B64 fehlt – APK wird mit temporärem Debug-Key signiert (Updates nur nach Deinstallation)"
+          fi
+
       - name: Build release APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         run: gradle assembleRelease --no-daemon --stacktrace
 
       - name: Rename APK

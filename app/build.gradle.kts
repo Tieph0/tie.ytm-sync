@@ -18,12 +18,19 @@ android {
         versionName = "1.0.$buildNumber"
     }
 
+    // Release key comes from CI secrets (KEYSTORE_PATH / KEYSTORE_PASSWORD).
+    // Without them the build falls back to the debug key.
+    val keystorePath = System.getenv("KEYSTORE_PATH")
+    val keystorePassword = System.getenv("KEYSTORE_PASSWORD")
+    val hasReleaseKey = !keystorePath.isNullOrBlank() && !keystorePassword.isNullOrBlank()
     signingConfigs {
-        create("release") {
-            storeFile = file("release.jks")
-            storePassword = "ytmsync"
-            keyAlias = "ytmsync"
-            keyPassword = "ytmsync"
+        if (hasReleaseKey) {
+            create("release") {
+                storeFile = file(keystorePath!!)
+                storePassword = keystorePassword
+                keyAlias = "ytmsync"
+                keyPassword = keystorePassword
+            }
         }
     }
 
@@ -32,10 +39,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("release")
-        }
-        debug {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName(if (hasReleaseKey) "release" else "debug")
         }
     }
 
